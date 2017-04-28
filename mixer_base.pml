@@ -24,7 +24,7 @@ proctype Decider(){
 
     printf("Hello there 2\n");
     assert(curr_transaction != 0); // There is a new non-zero transaction amount needed to be mixed
-    
+
     target_wallet = 0; // Start at the first wallet of each new transaction
     printf("Current Transaction, %d \n", curr_transaction);
 
@@ -72,7 +72,7 @@ proctype Creator(){
       printf("Hello there 1 %d \n", curr_transaction);
       assert(curr_transaction == 0); // The previous transaction has been completely mixed before starting new one
       dest_transaction = 0; // Reset destination wallet
-      
+
 
       select(curr_transaction: 10..30);
       expected_transaction = curr_transaction;
@@ -90,7 +90,7 @@ init {
   wallet[2] = 10;
   wallet[3] = 10;
 
-  
+
   run Decider();
   run Creator();
 
