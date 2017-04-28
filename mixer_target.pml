@@ -25,9 +25,9 @@ proctype Unlock(int t_num) {
   do
   :: (i < 8) ->
     do
-    :: (transactions[t_num].locks[i] == true) ->
+    :: (transactions[t_num].locks[i] == 1) ->
       wallet[i].locked = false;
-      transactions[t_num].locks[i] = false;
+      transactions[t_num].locks[i] = 0;
     :: else -> break;
     od;
   :: else -> break;
@@ -44,11 +44,11 @@ proctype Creator() {
     int i = 0;
     loop:
       do
-      :: (transactions[i].completed == true) ->
+      :: (transactions[i].completed == 1) ->
         select(transactions[i].curr: 10..30);
         transactions[i].total = transactions[i].curr;
-        transaction[i].assigned = false;
-        transaction[i].completed = false;
+        transaction[i].assigned = 0;
+        transaction[i].completed = 0;
       :: else ->
         if
         :: (i < 8) -> i++;
@@ -67,7 +67,7 @@ init {
   do
   :: (i < 8) ->
     wallet[i].value = 10;
-    wallet[i].locked = false;
+    wallet[i].locked = 0;
   :: else -> break;
   od;
 
@@ -81,8 +81,8 @@ init {
     :: (k < 8) -> transactions[j].locks[k] = 0;
     :: else -> break;
     od;
-    transactions[j].assigned = false; //? Don't want decider to start until creator makes trans
-    transactions[j].completed = true;
+    transactions[j].assigned = 0; //? Don't want decider to start until creator makes trans
+    transactions[j].completed = 1;
   :: else -> break;
   od;
 
