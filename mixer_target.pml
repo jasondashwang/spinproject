@@ -26,7 +26,7 @@ proctype Unlock(int t_num) {
   :: (i < 8) ->
     do
     :: (transactions[t_num].locks[i] == 1) ->
-      wallet[i].locked = 0;
+      wallets[i].locked = 0;
       transactions[t_num].locks[i] = 0;
     :: else -> break;
     od;
@@ -37,7 +37,48 @@ proctype Unlock(int t_num) {
 
 // Decides which wallets are used for mixing based on the transactions
 proctype Decider() {
+  int i = 0;
+  loop:
+    do
+    ::(transactions[i].assigned == 0) -> // do something
+      // Loop through all the wallets until we find an unlocked wallet
+      // Determine how many wallets a transaction requires
+      int neededWallets = transactions[i].total / 10;
+      do
+      :: ((transactions[i].total % 10) > 0) -> neededWallets++;
+      :: else -> break;
+      od;
 
+      int w = 0;
+      do
+      :: (neededWallets == 0) ->
+        transactions[i].assigned = 1; // Transaction is finished with its assignment
+        break; // If no more wallets are needed,
+      :: else ->
+        do
+        ::(wallets[w].locked == 0) -> // assign it
+          wallets[w].locked = 0; // Lock it
+          neededWallets--;
+          transactions[i].locks[w] = 1;
+          w++;
+          break;
+        :: else ->
+          if
+          :: (w < 8) -> w++;
+          :: (w >= 8) -> w = 0;
+          fi;
+        od;
+      od;
+    :: else ->
+        if
+        :: (i < 5) -> i++;
+        :: (i >= 5) -> i = 0;
+        fi;
+    od;
+
+
+
+  goto loop;
 }
 
 // Creates new transactions
@@ -50,10 +91,11 @@ proctype Creator() {
         transactions[i].total = transactions[i].curr;
         transaction[i].assigned = 0;
         transaction[i].completed = 0;
+        i++;
       :: else ->
         if
-        :: (i < 8) -> i++;
-        :: (i >= 8) -> i = 0;
+        :: (i < 5) -> i++;
+        :: (i >= 5) -> i = 0;
         fi;
       od;
 
@@ -67,8 +109,9 @@ init {
   int i = 0;
   do
   :: (i < 8) ->
-    wallet[i].value = 10;
-    wallet[i].locked = 0;
+    wallets[i].value = 10;
+    wallets[i].locked = 0;
+    i++;
   :: else -> break;
   od;
 
@@ -79,11 +122,14 @@ init {
     transactions[j].curr = 0;
     transactions[j].total = 0;
     do
-    :: (k < 8) -> transactions[j].locks[k] = 0;
+    :: (k < 8) ->
+      transactions[j].locks[k] = 0;
+      k++;
     :: else -> break;
     od;
-    transactions[j].assigned = 0; //? Don't want decider to start until creator makes trans
+    transactions[j].assigned = 1;
     transactions[j].completed = 1;
+    j++;
   :: else -> break;
   od;
 
