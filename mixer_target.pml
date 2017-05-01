@@ -26,10 +26,11 @@ proctype Unlock(int t_num) {
   :: (i < 8) ->
     do
     :: (transactions[t_num].locks[i] == 1) ->
-      wallet[i].locked = false;
+      wallet[i].locked = 0;
       transactions[t_num].locks[i] = 0;
     :: else -> break;
     od;
+    i++;
   :: else -> break;
   od;
 }
