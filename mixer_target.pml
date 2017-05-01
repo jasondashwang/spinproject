@@ -80,18 +80,24 @@ int dest_wal[5];
 // Creates new transactions
 proctype Creator() {
     int i = 0;
-    do
-    :: (transactions[i].completed == 1) ->
-      select(transactions[i].curr: 10..30);
-      transactions[i].total = transactions[i].curr;
-      transaction[i].assigned = 0;
-      transaction[i].completed = 0;
-    :: else ->
+
+    loop:
+      do
+      :: (transactions[i].completed == 1) ->
+        select(transactions[i].curr: 10..30);
+        transactions[i].total = transactions[i].curr;
+        transaction[i].assigned = 0;
+        transaction[i].completed = 0;
+        break;
+      :: else -> break;
+      od;
+
       if
       :: (i < 4) -> i++;
       :: (i >= 4) -> i = 0;
       fi;
-    od;
+
+    goto loop;
 }
 
 // initialize arrays of wallets and transactions and call creator
