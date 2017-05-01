@@ -9,6 +9,7 @@ Wal wallets[8];
 typedef Trans {
   int curr;
   int total;
+  int dest;
   bool locks[8]; // sz 8 because there's 8 wallets
   bool assigned;
   bool completed;
@@ -16,63 +17,94 @@ typedef Trans {
 
 Trans transactions[5];
 
-int dest_wal[5];
-
-// unlock wallets and set transaction lock array to false
-// when transaction is done
-proctype Unlock(int t_num) {
-  int i;
-
-  for (i: 0..7) {
+proctype Mix(int t_num) {
+  assert(transactions[t-num].assigned == 1); // We are only mixing transactions that are finished with assignment
+  int w;
+  // Loop through its locks array to find the wallets that are locked
+  for (w: 0..8) {
     do
-    :: (transactions[t_num].locks[i] == 1) ->
-      wallets[i].locked = 0;
-      transactions[t_num].locks[i] = 0;
+    :: (transactions[t_num].locks[w] == 1) -> 
+      // Transfer money out of locked wallet
+      // Replenish money into locked wallet
+      // Adjust transaction current
+      // Unlock the wallet
+      do
+      :: (transactions[t_num].curr >= 10) ->
+          wallets[w].value = 0; // Use all the money in the wallet
+          transactions[t_num].dest = transactions[t_num].dest + 10; // Move to destination
+          transactions[t_num].curr = transactions[t_num].curr - 10; // Pay out
+          wallets[w].value = 10; // Replenish funds
+          break;
+      :: else -> 
+          wallets[w].value = wallets[w].value - transactions[t_num].curr;
+          transactions[t_num].dest = transactions[t_num].dest + transactions[t_num].curr;
+          transactions[t_num].curr = 0;
+          wallets[w].value = wallets[w].value + transactions[t_num].curr;
+          break;
+      od;
+
+      transactions[t_num].locks[w] = 0;
+      wallets[w].locked = 0;
+
     :: else -> break;
     od;
   }
+
+  assert(transactions[t_num].curr == 0); // All money has been mixed
+  assert(transactions[t_num].dest == transactions[t_num].total); // All money has reached its destination
+
+  transactions[t_num].completed = 1;
 }
 
 // Decides which wallets are used for mixing based on the transactions
 proctype Decider() {
   int i = 0;
-  loop:
-    do
-    ::(transactions[i].assigned == 0) -> // do something
-      // Loop through all the wallets until we find an unlocked wallet
-      // Determine how many wallets a transaction requires
-      int neededWallets = transactions[i].total / 10;
-      do
-      :: ((transactions[i].total % 10) > 0) -> neededWallets++;
-      :: else -> break;
-      od;
+  int neededWallets;
 
-      int w = 0;
-      do
-      :: (neededWallets == 0) ->
-        transactions[i].assigned = 1; // Transaction is finished with its assignment
-        break; // If no more wallets are needed,
-      :: else ->
-        do
-        ::(wallets[w].locked == 0) -> // assign it
-          wallets[w].locked = 0; // Lock it
-          neededWallets--;
-          transactions[i].locks[w] = 1;
-          break;
-        :: else ->
-          if
-          :: (w < 7) -> w++;
-          :: (w >= 7) -> w = 0;
-          fi;
-        od;
-      od;
-    :: else ->
-        if
-        :: (i < 4) -> i++;
-        :: (i >= 4) -> i = 0;
-        fi;
+  do
+  ::(transactions[i].assigned == 0) -> // do something
+    // Loop through all the wallets until we find an unlocked wallet
+    // Determine how many wallets a transaction requires
+    printf("Unassigned index: %d \n", i);
+    printf("Transaction total: %d \n", transactions[i].total);
+
+    neededWallets = transactions[i].total / 10;
+    do
+    :: ((transactions[i].total % 10) > 0) -> 
+      neededWallets++;
+      break;
+    :: else -> break;
     od;
-  goto loop;
+    printf("Needed wallets: %d \n", neededWallets);
+
+    int w = 0;
+    do
+    :: (neededWallets == 0) ->
+      printf("Finished assigning index: %d \n", i);
+      transactions[i].assigned = 1; // Transaction is finished with its assignment
+      break; // If no more wallets are needed,
+    :: else ->
+      do
+      ::(wallets[w].locked == 0) -> // assign it
+        wallets[w].locked = 1; // Lock it
+        neededWallets--;
+        transactions[i].locks[w] = 1;
+        break;
+      :: else ->
+        if
+        :: (w < 7) -> w++;
+        :: (w >= 7) -> w = 0;
+        fi;
+      od;
+    od;
+
+  :: else ->
+      if
+      :: (i < 4) -> i++;
+      :: (i >= 4) -> i = 0;
+      fi;
+  od;
+
 }
 
 // Creates new transactions
@@ -82,10 +114,13 @@ proctype Creator() {
     loop:
       do
       :: (transactions[i].completed == 1) ->
-        select(transactions[i].curr: 10..30);
+        int new_value = 0;
+        select(new_value: 10..30);
+        transactions[i].curr = new_value;
         transactions[i].total = transactions[i].curr;
-        transaction[i].assigned = 0;
-        transaction[i].completed = 0;
+        transactions[i].assigned = 0;
+        transactions[i].completed = 0;
+        transactions[i].dest = 0;
         break;
       :: else -> break;
       od;
@@ -120,6 +155,7 @@ init {
 
     transactions[j].assigned = 1;
     transactions[j].completed = 1;
+    transactions[j].dest = 0;
   }
 
   // int o = 0;
@@ -143,7 +179,7 @@ init {
   //   :: (lk < 7) ->
   //     printf("%d, ", transactions[y].locks[lk]);
   //     lk++;
-  //   :: (lk >= 8) ->
+  //   :: (lk >= 7) ->
   //     printf("%d\n", transactions[y].locks[lk]);
   //     break;
   //   od;
@@ -153,6 +189,7 @@ init {
   // :: else -> break;
   // od;
 
-  // run Decider();
+  
   run Creator();
+  run Decider();
 }
