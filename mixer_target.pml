@@ -20,62 +20,60 @@ int dest_wal[5];
 
 // unlock wallets and set transaction lock array to false
 // when transaction is done
-// proctype Unlock(int t_num) {
-//   int i = 0;
-//   do
-//   :: (i < 8) ->
-//     do
-//     :: (transactions[t_num].locks[i] == 1) ->
-//       wallets[i].locked = 0;
-//       transactions[t_num].locks[i] = 0;
-//     :: else -> break;
-//     od;
-//     i++;
-//   :: else -> break;
-//   od;
-// }
+proctype Unlock(int t_num) {
+  int i;
+
+  for (i: 0..7) {
+    do
+    :: (transactions[t_num].locks[i] == 1) ->
+      wallets[i].locked = 0;
+      transactions[t_num].locks[i] = 0;
+    :: else -> break;
+    od;
+  }
+}
 
 // Decides which wallets are used for mixing based on the transactions
-// proctype Decider() {
-//   int i = 0;
-//   loop:
-//     do
-//     ::(transactions[i].assigned == 0) -> // do something
-//       // Loop through all the wallets until we find an unlocked wallet
-//       // Determine how many wallets a transaction requires
-//       int neededWallets = transactions[i].total / 10;
-//       do
-//       :: ((transactions[i].total % 10) > 0) -> neededWallets++;
-//       :: else -> break;
-//       od;
-//
-//       int w = 0;
-//       do
-//       :: (neededWallets == 0) ->
-//         transactions[i].assigned = 1; // Transaction is finished with its assignment
-//         break; // If no more wallets are needed,
-//       :: else ->
-//         do
-//         ::(wallets[w].locked == 0) -> // assign it
-//           wallets[w].locked = 0; // Lock it
-//           neededWallets--;
-//           transactions[i].locks[w] = 1;
-//           break;
-//         :: else ->
-//           if
-//           :: (w < 7) -> w++;
-//           :: (w >= 7) -> w = 0;
-//           fi;
-//         od;
-//       od;
-//     :: else ->
-//         if
-//         :: (i < 4) -> i++;
-//         :: (i >= 4) -> i = 0;
-//         fi;
-//     od;
-//   goto loop;
-// }
+proctype Decider() {
+  int i = 0;
+  loop:
+    do
+    ::(transactions[i].assigned == 0) -> // do something
+      // Loop through all the wallets until we find an unlocked wallet
+      // Determine how many wallets a transaction requires
+      int neededWallets = transactions[i].total / 10;
+      do
+      :: ((transactions[i].total % 10) > 0) -> neededWallets++;
+      :: else -> break;
+      od;
+
+      int w = 0;
+      do
+      :: (neededWallets == 0) ->
+        transactions[i].assigned = 1; // Transaction is finished with its assignment
+        break; // If no more wallets are needed,
+      :: else ->
+        do
+        ::(wallets[w].locked == 0) -> // assign it
+          wallets[w].locked = 0; // Lock it
+          neededWallets--;
+          transactions[i].locks[w] = 1;
+          break;
+        :: else ->
+          if
+          :: (w < 7) -> w++;
+          :: (w >= 7) -> w = 0;
+          fi;
+        od;
+      od;
+    :: else ->
+        if
+        :: (i < 4) -> i++;
+        :: (i >= 4) -> i = 0;
+        fi;
+    od;
+  goto loop;
+}
 
 // Creates new transactions
 proctype Creator() {
@@ -103,32 +101,26 @@ proctype Creator() {
 // initialize arrays of wallets and transactions and call creator
 // and decider
 init {
-  int i = 0;
-  do
-  :: (i < 8) ->
+  int i;
+  for (i: 0..7) {
     wallets[i].value = 10;
     wallets[i].locked = 0;
-    i++;
-  :: else -> break;
-  od;
+  }
 
-  int j = 0;
-  int k = 0;
-  do
-  :: (j < 5) ->
+  int j;
+  int k;
+
+  for (j: 0..4) {
     transactions[j].curr = 0;
     transactions[j].total = 0;
-    do
-    :: (k < 8) ->
+
+    for (k: 0..7) {
       transactions[j].locks[k] = 0;
-      k++;
-    :: else -> break;
-    od;
+    }
+
     transactions[j].assigned = 1;
     transactions[j].completed = 1;
-    j++;
-  :: else -> break;
-  od;
+  }
 
   // int o = 0;
   // do
