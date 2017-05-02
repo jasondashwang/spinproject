@@ -1,0 +1,60 @@
+BITCOIN MIXING
+
+Powerpoint (https://docs.google.com/presentation/d/1oq6TWLOvxWj3li9K2oNrpiMDccjj6dzTz0JR2XCm3tU/edit?usp=sharing)
+- Existence of the Powerpoint is because the concepts behind our
+  models can be hard to explain without drawing them out and 
+  whiteboarding the models would have taken too long.
+- The relevant slides are 6 and 9, which have animations of the two
+  different versions of our model. To view, present the slide show 
+  from slide 6 or 9 and click through the animation.
+- The other slides are more notes for us to present and explain our
+  models.
+
+Goal:
+Demonstrate the feasibility and practicality of Bitcoin mixing as a tool
+for Bitcoin anonymization. We originally proposed modeling some combination
+of mixing and CoinJoin, but we decided that mixing was more interesting
+than CoinJoin, especially because we could implement a model of asynchronous
+mixing, which does not seem as relevant for CoinJoin. 
+
+The main idea with mixing is that users pay the service the value of the 
+transaction they would like to make (plus a transaction fee, which we 
+abstracted out) and the service completes the transaction with its own
+Bitcoins (splitting the transaction into smaller transactions, if 
+necessary) so that the Bitcoins actually sent cannot be traced to the original
+sender. At larger scales, this provides anonymity because of the difficulties
+with tracking changing transaction values (once the fee is subtracted) and 
+the fact that the sender's original Bitcoins are not used to complete the 
+transaction.
+
+
+Model:
+
+BASE (mixer_base.pml)
+- Demonstrate basic functionality of Bitcoin mixing.
+- Abstracted out input wallet (see animation) and focused on splitting 
+   and completing transactions while also replenishing the intermediary
+   wallets that are a part of the service. 
+- Limited transaction values to those that require splitting because the
+   modeling is more interesting and select (used to generate transaction
+   values) is biased towards smaller numbers. 
+- Only one transaction can be made at a time with this model
+- Inefficient due to wallets possibly not being used in a transaction
+
+ASYNCHRONOUS (mixer_target.pml)
+- Build on the basic model to allow mixing with asynchronous transactions.
+- Abstracted out input wallet and limited transaction values like in base.
+- Have mixing/completing the transaction as a seperate process to mirror
+   how Bitcoin is decentralized and multiple transactions can occur at 
+   once.
+- More realistic and scalable because can accomodate more users and 
+   increasing transaction and wallet numbers/values in practice (we kept
+   the numbers on the smaller side for the sake of Spin)
+
+
+Challenges:
+- Choosing which aspects of mixing we could abstract out and which 
+   were necessary to maintain the concepts behind mixing. 
+- Trying to debug Spin (the errors messages tended to be unhelpful)
+- Finding a way to model what we wanted with the limited operations 
+  and data structures available in Spin (compared to Java, etc.)
