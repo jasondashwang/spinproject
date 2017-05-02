@@ -2,7 +2,7 @@
 #define PAN_H
 
 #define SpinVersion	"Spin Version 6.2.7 -- 2 March 2014"
-#define PanSource	"mixer_base.pml"
+#define PanSource	"mixer_target.pml"
 
 #define G_long	8
 #define G_int	4
@@ -121,12 +121,12 @@
 #endif
 #ifdef NP
 	#define HAS_NP	2
-	#define VERI	4	/* np_ */
+	#define VERI	5	/* np_ */
 #endif
 #ifndef NOCLAIM
 	#define NCLAIMS	1
 	#ifndef NP
-		#define VERI	3
+		#define VERI	4
 	#endif
 #endif
 
@@ -136,38 +136,45 @@ typedef struct S_F_MAP {
 	int upto;
 } S_F_MAP;
 
-#define nstates3	28	/* no_starvation */
-#define minseq3	56
-#define maxseq3	82
-#define endstate3	27
+#define nstates4	49	/* no_starvation_transaction_complete */
+#define minseq4	163
+#define maxseq4	210
+#define endstate4	48
 
-#define nstates2	8	/* :init: */
-#define minseq2	49
-#define maxseq2	55
-#define endstate2	7
+#define nstates3	38	/* :init: */
+#define minseq3	126
+#define maxseq3	162
+#define endstate3	37
 
-#define nstates1	17	/* Creator */
-#define minseq1	33
-#define maxseq1	48
-#define endstate1	16
+#define nstates2	31	/* Creator */
+#define minseq2	96
+#define maxseq2	125
+#define endstate2	30
 
-#define nstates0	34	/* Decider */
+#define nstates1	54	/* Decider */
+#define minseq1	43
+#define maxseq1	95
+#define endstate1	53
+
+#define nstates0	44	/* Mix */
 #define minseq0	0
-#define maxseq0	32
-#define endstate0	33
+#define maxseq0	42
+#define endstate0	43
 
+extern short src_ln4[];
 extern short src_ln3[];
 extern short src_ln2[];
 extern short src_ln1[];
 extern short src_ln0[];
+extern S_F_MAP src_file4[];
 extern S_F_MAP src_file3[];
 extern S_F_MAP src_file2[];
 extern S_F_MAP src_file1[];
 extern S_F_MAP src_file0[];
 
 #define T_ID	unsigned char
-#define _T5	50
-#define _T2	51
+#define _T5	93
+#define _T2	94
 #define WS		8 /* word size in bytes */
 #define SYNC	0
 #define ASYNC	0
@@ -182,51 +189,19 @@ extern S_F_MAP src_file0[];
 	#endif
 #endif
 
-typedef struct P3 { /* no_starvation */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-} P3;
-#define Air3	(sizeof(P3) - 3)
-
-#define Pinit	((P2 *)this)
-typedef struct P2 { /* :init: */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-} P2;
-#define Air2	(sizeof(P2) - 3)
-
-#define PCreator	((P1 *)this)
-typedef struct P1 { /* Creator */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-} P1;
-#define Air1	(sizeof(P1) - 3)
-
-#define PDecider	((P0 *)this)
-typedef struct P0 { /* Decider */
-	unsigned _pid : 8;  /* 0..255 */
-	unsigned _t   : 4; /* proctype */
-	unsigned _p   : 7; /* state    */
-#ifdef HAS_PRIORITY
-	unsigned _priority : 8; /* 0..255 */
-#endif
-	int target_wallet;
-} P0;
-#define Air0	(sizeof(P0) - Offsetof(P0, target_wallet) - 1*sizeof(int))
-
-typedef struct P4 { /* np_ */
+struct Wal { /* user defined type */
+	int value;
+	unsigned locked : 1;
+};
+struct Transac { /* user defined type */
+	int curr;
+	int total;
+	int dest;
+	uchar locks[8];
+	unsigned assigned : 1;
+	unsigned completed : 1;
+};
+typedef struct P4 { /* no_starvation_transaction_complete */
 	unsigned _pid : 8;  /* 0..255 */
 	unsigned _t   : 4; /* proctype */
 	unsigned _p   : 7; /* state    */
@@ -235,6 +210,70 @@ typedef struct P4 { /* np_ */
 #endif
 } P4;
 #define Air4	(sizeof(P4) - 3)
+
+#define Pinit	((P3 *)this)
+typedef struct P3 { /* :init: */
+	unsigned _pid : 8;  /* 0..255 */
+	unsigned _t   : 4; /* proctype */
+	unsigned _p   : 7; /* state    */
+#ifdef HAS_PRIORITY
+	unsigned _priority : 8; /* 0..255 */
+#endif
+	int i;
+	int j;
+	int k;
+} P3;
+#define Air3	(sizeof(P3) - Offsetof(P3, k) - 1*sizeof(int))
+
+#define PCreator	((P2 *)this)
+typedef struct P2 { /* Creator */
+	unsigned _pid : 8;  /* 0..255 */
+	unsigned _t   : 4; /* proctype */
+	unsigned _p   : 7; /* state    */
+#ifdef HAS_PRIORITY
+	unsigned _priority : 8; /* 0..255 */
+#endif
+	int i;
+	int new_value;
+} P2;
+#define Air2	(sizeof(P2) - Offsetof(P2, new_value) - 1*sizeof(int))
+
+#define PDecider	((P1 *)this)
+typedef struct P1 { /* Decider */
+	unsigned _pid : 8;  /* 0..255 */
+	unsigned _t   : 4; /* proctype */
+	unsigned _p   : 7; /* state    */
+#ifdef HAS_PRIORITY
+	unsigned _priority : 8; /* 0..255 */
+#endif
+	int i;
+	int neededWallets;
+	int w;
+} P1;
+#define Air1	(sizeof(P1) - Offsetof(P1, w) - 1*sizeof(int))
+
+#define PMix	((P0 *)this)
+typedef struct P0 { /* Mix */
+	unsigned _pid : 8;  /* 0..255 */
+	unsigned _t   : 4; /* proctype */
+	unsigned _p   : 7; /* state    */
+#ifdef HAS_PRIORITY
+	unsigned _priority : 8; /* 0..255 */
+#endif
+	int t_num;
+	int w;
+} P0;
+#define Air0	(sizeof(P0) - Offsetof(P0, w) - 1*sizeof(int))
+
+typedef struct P5 { /* np_ */
+	unsigned _pid : 8;  /* 0..255 */
+	unsigned _t   : 4; /* proctype */
+	unsigned _p   : 7; /* state    */
+#ifdef HAS_PRIORITY
+	unsigned _priority : 8; /* 0..255 */
+#endif
+} P5;
+#define Air5	(sizeof(P5) - 3)
 
 #define Pclaim	P0
 #ifndef NCLAIMS
@@ -426,12 +465,8 @@ typedef struct State {
 		unsigned short _event;
 	#endif
 #endif
-	unsigned in_mix : 1;
-	unsigned in_create : 1;
-	int wallet[4];
-	int curr_transaction;
-	int expected_transaction;
-	int dest_transaction;
+	struct Wal wallets[8];
+	struct Transac transactions[5];
 #ifdef TRIX
 	/* room for 512 proc+chan ptrs, + safety margin */
 	char *_ids_[MAXPROC+MAXQ+4];
@@ -456,19 +491,20 @@ typedef struct TRIX_v6 {
 #define FORWARD_MOVES	"pan.m"
 #define REVERSE_MOVES	"pan.b"
 #define TRANSITIONS	"pan.t"
-#define _NP_	4
-#define nstates4	3 /* np_ */
-#define endstate4	2 /* np_ */
+#define _NP_	5
+#define nstates5	3 /* np_ */
+#define endstate5	2 /* np_ */
 
-#define start4	0 /* np_ */
-#define start3	7
-#define start2	1
-#define start1	1
+#define start5	0 /* np_ */
+#define start4	13
+#define start3	1
+#define start2	20
+#define start1	50
 #define start0	1
 #ifdef NP
 	#define ACCEPT_LAB	1 /* at least 1 in np_ */
 #else
-	#define ACCEPT_LAB	2 /* user-defined accept labels */
+	#define ACCEPT_LAB	5 /* user-defined accept labels */
 #endif
 #ifdef MEMCNT
 	#ifdef MEMLIM
@@ -802,7 +838,7 @@ typedef struct BFS_State {
 
 void qsend(int, int, int);
 
-#define Addproc(x)	addproc(256, 1, x)
+#define Addproc(x)	addproc(256, 1, x, 0)
 #define LOCAL	1
 #define Q_FULL_F	2
 #define Q_EMPT_F	3
@@ -812,7 +848,7 @@ void qsend(int, int, int);
 #define GLOBAL	7
 #define BAD	8
 #define ALPHA_F	9
-#define NTRANS	52
+#define NTRANS	95
 #if defined(BFS_PAR) || NCORE>1
 	void e_critical(int);
 	void x_critical(int);

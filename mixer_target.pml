@@ -6,7 +6,7 @@ typedef Wal {
 // Wallet amounts
 Wal wallets[8];
 
-typedef Trans {
+typedef Transac {
   int curr;
   int total;
   int dest;
@@ -15,7 +15,7 @@ typedef Trans {
   bool completed;
 }
 
-Trans transactions[5];
+Transac transactions[5];
 
 proctype Mix(int t_num) {
 
@@ -176,38 +176,21 @@ init {
     transactions[j].dest = 0;
   }
 
-  // int o = 0;
-  // do
-  // :: (o < 8) ->
-  //   printf("%d\n", o);
-  //   printf("%d\n", wallets[o].value);
-  //   printf("%d\n", wallets[o].locked);
-  //   o++;
-  // :: else -> break;
-  // od;
-
-  // int y = 0;
-  // do
-  // :: (y < 5) ->
-  //   printf("%d\n", y);
-  //   printf("curr: %d\n", transactions[y].curr);
-  //   printf("total: %d\n", transactions[y].total);
-  //   int lk = 0;
-  //   do
-  //   :: (lk < 7) ->
-  //     printf("%d, ", transactions[y].locks[lk]);
-  //     lk++;
-  //   :: (lk >= 7) ->
-  //     printf("%d\n", transactions[y].locks[lk]);
-  //     break;
-  //   od;
-  //   printf("assigned: %d\n", transactions[y].assigned);
-  //   printf("completed: %d\n", transactions[y].completed);
-  //   y++;
-  // :: else -> break;
-  // od;
 
   
   run Creator();
   run Decider();
+}
+
+// ltl no_starvation_wallets{
+//   always (eventually wallets[0].locked) && (eventually wallets[1].locked)
+//   && (eventually wallets[2].locked) && (eventually wallets[3].locked)
+//   && (eventually wallets[4].locked) && (eventually wallets[5].locked)
+//   && (eventually wallets[6].locked) && (eventually wallets[7].locked);
+// }
+
+ltl no_starvation_transaction_complete{
+  always (eventually transactions[0].completed) && (eventually transactions[1].completed)
+  && (eventually transactions[2].completed) && (eventually transactions[3].completed)
+  && (eventually transactions[4].completed);
 }

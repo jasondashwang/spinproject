@@ -22,123 +22,304 @@ settable(void)
 {	Trans *T;
 	Trans *settr(int, int, int, int, int, char *, int, int, int);
 
-	trans = (Trans ***) emalloc(5*sizeof(Trans **));
+	trans = (Trans ***) emalloc(6*sizeof(Trans **));
 
-	/* proctype 3: no_starvation */
+	/* proctype 4: no_starvation_transaction_complete */
 
-	trans[3] = (Trans **) emalloc(28*sizeof(Trans *));
+	trans[4] = (Trans **) emalloc(49*sizeof(Trans *));
 
-	trans[3][8]	= settr(63,0,7,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][7] = settr(62,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(62,0,1,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(62,0,3,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(62,0,5,0,0,"DO", 0, 2, 0);
-	trans[3][1]	= settr(56,0,12,3,0,"(!(!(in_create)))", 1, 2, 0);
-	trans[3][2]	= settr(57,0,12,1,0,"goto accept_S2", 0, 2, 0);
-	trans[3][3]	= settr(58,0,17,4,0,"(!(in_mix))", 1, 2, 0);
-	trans[3][4]	= settr(59,0,17,1,0,"goto accept_S8", 0, 2, 0);
-	trans[3][5]	= settr(60,0,24,1,0,"(1)", 0, 2, 0);
-	trans[3][6]	= settr(61,0,24,1,0,"goto T0_S5", 0, 2, 0);
-	trans[3][9]	= settr(64,0,12,1,0,"break", 0, 2, 0);
-	trans[3][13]	= settr(68,0,12,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][12] = settr(67,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(67,0,10,0,0,"DO", 0, 2, 0);
-	trans[3][10]	= settr(65,0,12,5,0,"(!(!(in_create)))", 1, 2, 0);
-	trans[3][11]	= settr(66,0,12,1,0,"goto accept_S2", 0, 2, 0);
-	trans[3][14]	= settr(69,0,17,1,0,"break", 0, 2, 0);
-	trans[3][18]	= settr(73,0,17,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][17] = settr(72,0,0,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(72,0,15,0,0,"DO", 0, 2, 0);
-	trans[3][15]	= settr(70,0,17,6,0,"(!(in_mix))", 1, 2, 0);
-	trans[3][16]	= settr(71,0,17,1,0,"goto accept_S8", 0, 2, 0);
-	trans[3][19]	= settr(74,0,24,1,0,"break", 0, 2, 0);
-	trans[3][25]	= settr(80,0,24,1,0,".(goto)", 0, 2, 0);
-	T = trans[3][24] = settr(79,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(79,0,20,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(79,0,22,0,0,"DO", 0, 2, 0);
-	trans[3][20]	= settr(75,0,17,7,0,"(!(in_mix))", 1, 2, 0);
-	trans[3][21]	= settr(76,0,17,1,0,"goto accept_S8", 0, 2, 0);
-	trans[3][22]	= settr(77,0,24,1,0,"(1)", 0, 2, 0);
-	trans[3][23]	= settr(78,0,24,1,0,"goto T0_S5", 0, 2, 0);
-	trans[3][26]	= settr(81,0,27,1,0,"break", 0, 2, 0);
-	trans[3][27]	= settr(82,0,0,8,8,"-end-", 0, 3500, 0);
+	trans[4][14]	= settr(176,0,13,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][13] = settr(175,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(175,0,1,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(175,0,3,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(175,0,5,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(175,0,7,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(175,0,9,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(175,0,11,0,0,"DO", 0, 2, 0);
+	trans[4][1]	= settr(163,0,18,3,0,"(!(transactions[4].completed))", 1, 2, 0);
+	trans[4][2]	= settr(164,0,18,1,0,"goto accept_S7", 0, 2, 0);
+	trans[4][3]	= settr(165,0,23,4,0,"(!(transactions[3].completed))", 1, 2, 0);
+	trans[4][4]	= settr(166,0,23,1,0,"goto accept_S12", 0, 2, 0);
+	trans[4][5]	= settr(167,0,28,5,0,"(!(transactions[2].completed))", 1, 2, 0);
+	trans[4][6]	= settr(168,0,28,1,0,"goto accept_S17", 0, 2, 0);
+	trans[4][7]	= settr(169,0,33,6,0,"(!(transactions[1].completed))", 1, 2, 0);
+	trans[4][8]	= settr(170,0,33,1,0,"goto accept_S20", 0, 2, 0);
+	trans[4][9]	= settr(171,0,38,7,0,"(!(transactions[0].completed))", 1, 2, 0);
+	trans[4][10]	= settr(172,0,38,1,0,"goto accept_S26", 0, 2, 0);
+	trans[4][11]	= settr(173,0,45,1,0,"(1)", 0, 2, 0);
+	trans[4][12]	= settr(174,0,45,1,0,"goto T0_S23", 0, 2, 0);
+	trans[4][15]	= settr(177,0,18,1,0,"break", 0, 2, 0);
+	trans[4][19]	= settr(181,0,18,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][18] = settr(180,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(180,0,16,0,0,"DO", 0, 2, 0);
+	trans[4][16]	= settr(178,0,18,8,0,"(!(transactions[4].completed))", 1, 2, 0);
+	trans[4][17]	= settr(179,0,18,1,0,"goto accept_S7", 0, 2, 0);
+	trans[4][20]	= settr(182,0,23,1,0,"break", 0, 2, 0);
+	trans[4][24]	= settr(186,0,23,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][23] = settr(185,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(185,0,21,0,0,"DO", 0, 2, 0);
+	trans[4][21]	= settr(183,0,23,9,0,"(!(transactions[3].completed))", 1, 2, 0);
+	trans[4][22]	= settr(184,0,23,1,0,"goto accept_S12", 0, 2, 0);
+	trans[4][25]	= settr(187,0,28,1,0,"break", 0, 2, 0);
+	trans[4][29]	= settr(191,0,28,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][28] = settr(190,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(190,0,26,0,0,"DO", 0, 2, 0);
+	trans[4][26]	= settr(188,0,28,10,0,"(!(transactions[2].completed))", 1, 2, 0);
+	trans[4][27]	= settr(189,0,28,1,0,"goto accept_S17", 0, 2, 0);
+	trans[4][30]	= settr(192,0,33,1,0,"break", 0, 2, 0);
+	trans[4][34]	= settr(196,0,33,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][33] = settr(195,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(195,0,31,0,0,"DO", 0, 2, 0);
+	trans[4][31]	= settr(193,0,33,11,0,"(!(transactions[1].completed))", 1, 2, 0);
+	trans[4][32]	= settr(194,0,33,1,0,"goto accept_S20", 0, 2, 0);
+	trans[4][35]	= settr(197,0,38,1,0,"break", 0, 2, 0);
+	trans[4][39]	= settr(201,0,38,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][38] = settr(200,0,0,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(200,0,36,0,0,"DO", 0, 2, 0);
+	trans[4][36]	= settr(198,0,38,12,0,"(!(transactions[0].completed))", 1, 2, 0);
+	trans[4][37]	= settr(199,0,38,1,0,"goto accept_S26", 0, 2, 0);
+	trans[4][40]	= settr(202,0,45,1,0,"break", 0, 2, 0);
+	trans[4][46]	= settr(208,0,45,1,0,".(goto)", 0, 2, 0);
+	T = trans[4][45] = settr(207,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(207,0,41,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(207,0,43,0,0,"DO", 0, 2, 0);
+	trans[4][41]	= settr(203,0,38,13,0,"(!(transactions[0].completed))", 1, 2, 0);
+	trans[4][42]	= settr(204,0,38,1,0,"goto accept_S26", 0, 2, 0);
+	trans[4][43]	= settr(205,0,45,1,0,"(1)", 0, 2, 0);
+	trans[4][44]	= settr(206,0,45,1,0,"goto T0_S23", 0, 2, 0);
+	trans[4][47]	= settr(209,0,48,1,0,"break", 0, 2, 0);
+	trans[4][48]	= settr(210,0,0,14,14,"-end-", 0, 3500, 0);
 
-	/* proctype 2: :init: */
+	/* proctype 3: :init: */
 
-	trans[2] = (Trans **) emalloc(8*sizeof(Trans *));
+	trans[3] = (Trans **) emalloc(38*sizeof(Trans *));
 
-	trans[2][1]	= settr(49,0,2,9,9,"wallet[0] = 10", 1, 2, 0);
-	trans[2][2]	= settr(50,0,3,10,10,"wallet[1] = 10", 1, 2, 0);
-	trans[2][3]	= settr(51,0,4,11,11,"wallet[2] = 10", 1, 2, 0);
-	trans[2][4]	= settr(52,0,5,12,12,"wallet[3] = 10", 1, 2, 0);
-	trans[2][5]	= settr(53,0,6,13,13,"(run Decider())", 0, 2, 0);
-	trans[2][6]	= settr(54,0,7,14,14,"(run Creator())", 0, 2, 0);
-	trans[2][7]	= settr(55,0,0,15,15,"-end-", 0, 3500, 0);
+	trans[3][1]	= settr(126,0,8,15,15,"i = 0", 0, 2, 0);
+	trans[3][9]	= settr(134,0,8,1,0,".(goto)", 0, 2, 0);
+	T = trans[3][8] = settr(133,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(133,0,2,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(133,0,6,0,0,"DO", 0, 2, 0);
+	trans[3][2]	= settr(127,0,3,16,0,"((i<=7))", 0, 2, 0);
+	trans[3][3]	= settr(128,0,4,17,17,"wallets[i].value = 10", 1, 2, 0);
+	trans[3][4]	= settr(129,0,5,18,18,"wallets[i].locked = 0", 1, 2, 0);
+	trans[3][5]	= settr(130,0,8,19,19,"i = (i+1)", 0, 2, 0);
+	trans[3][6]	= settr(131,0,11,2,0,"else", 0, 2, 0);
+	trans[3][7]	= settr(132,0,11,1,0,"goto :b9", 0, 2, 0); /* m: 11 -> 0,32 */
+	reached3[11] = 1;
+	trans[3][10]	= settr(135,0,11,1,0,"break", 0, 2, 0);
+	trans[3][11]	= settr(136,0,32,20,20,"j = 0", 0, 2, 0); /* m: 12 -> 0,32 */
+	reached3[12] = 1;
+	trans[3][12]	= settr(0,0,0,0,0,"k = 0",0,0,0);
+	trans[3][13]	= settr(0,0,0,0,0,"j = 0",0,0,0);
+	trans[3][33]	= settr(158,0,32,1,0,".(goto)", 0, 2, 0);
+	T = trans[3][32] = settr(157,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(157,0,14,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(157,0,30,0,0,"DO", 0, 2, 0);
+	trans[3][14]	= settr(139,0,15,21,0,"((j<=4))", 0, 2, 0);
+	trans[3][15]	= settr(140,0,16,22,22,"transactions[j].curr = 0", 1, 2, 0);
+	trans[3][16]	= settr(141,0,17,23,23,"transactions[j].total = 0", 1, 2, 0);
+	trans[3][17]	= settr(142,0,23,24,24,"k = 0", 0, 2, 0);
+	trans[3][24]	= settr(149,0,23,1,0,".(goto)", 0, 2, 0);
+	T = trans[3][23] = settr(148,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(148,0,18,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(148,0,21,0,0,"DO", 0, 2, 0);
+	trans[3][18]	= settr(143,0,19,25,0,"((k<=7))", 0, 2, 0);
+	trans[3][19]	= settr(144,0,20,26,26,"transactions[j].locks[k] = 0", 1, 2, 0);
+	trans[3][20]	= settr(145,0,23,27,27,"k = (k+1)", 0, 2, 0);
+	trans[3][21]	= settr(146,0,26,2,0,"else", 0, 2, 0);
+	trans[3][22]	= settr(147,0,26,1,0,"goto :b11", 0, 2, 0);
+	trans[3][25]	= settr(150,0,26,1,0,"break", 0, 2, 0);
+	trans[3][26]	= settr(151,0,27,28,28,"transactions[j].assigned = 1", 1, 2, 0);
+	trans[3][27]	= settr(152,0,28,29,29,"transactions[j].completed = 1", 1, 2, 0);
+	trans[3][28]	= settr(153,0,29,30,30,"transactions[j].dest = 0", 1, 2, 0);
+	trans[3][29]	= settr(154,0,32,31,31,"j = (j+1)", 0, 2, 0);
+	trans[3][30]	= settr(155,0,35,2,0,"else", 0, 2, 0);
+	trans[3][31]	= settr(156,0,35,1,0,"goto :b10", 0, 2, 0);
+	trans[3][34]	= settr(159,0,35,1,0,"break", 0, 2, 0);
+	trans[3][35]	= settr(160,0,36,32,32,"(run Creator())", 0, 2, 0);
+	trans[3][36]	= settr(161,0,37,33,33,"(run Decider())", 0, 2, 0);
+	trans[3][37]	= settr(162,0,0,34,34,"-end-", 0, 3500, 0);
 
-	/* proctype 1: Creator */
+	/* proctype 2: Creator */
 
-	trans[1] = (Trans **) emalloc(17*sizeof(Trans *));
+	trans[2] = (Trans **) emalloc(31*sizeof(Trans *));
 
-	trans[1][1]	= settr(33,0,2,16,0,"((in_mix==0))", 1, 2, 0);
-	trans[1][2]	= settr(34,0,3,17,0,"printf('Hello there 1 %d \\n',curr_transaction)", 1, 2, 0);
-	trans[1][3]	= settr(35,0,4,18,0,"assert((curr_transaction==0))", 1, 2, 0);
-	trans[1][4]	= settr(36,0,5,19,19,"dest_transaction = 0", 1, 2, 0);
-	trans[1][5]	= settr(37,0,9,20,20,"curr_transaction = 10", 1, 2, 0);
-	trans[1][10]	= settr(42,0,9,1,0,".(goto)", 0, 2, 0);
-	T = trans[1][9] = settr(41,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(41,0,8,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(41,0,6,0,0,"DO", 0, 2, 0);
-	trans[1][8]	= settr(40,0,12,1,0,"goto :b1", 0, 2, 0);
-	trans[1][6]	= settr(38,0,7,21,0,"((curr_transaction<30))", 1, 2, 0);
-	trans[1][7]	= settr(39,0,9,22,22,"curr_transaction = (curr_transaction+1)", 1, 2, 0);
-	trans[1][11]	= settr(43,0,12,1,0,"break", 0, 2, 0);
-	trans[1][12]	= settr(44,0,13,23,23,"expected_transaction = curr_transaction", 1, 2, 0);
-	trans[1][13]	= settr(45,0,14,24,24,"in_create = 0", 1, 2, 0);
-	trans[1][14]	= settr(46,0,1,25,25,"in_mix = 1", 1, 2, 0);
-	trans[1][15]	= settr(47,0,1,1,0,"goto loop", 0, 2, 0);
-	trans[1][16]	= settr(0,0,0,0,0,"-end-",0,0,0);
+	trans[2][21]	= settr(116,0,20,1,0,".(goto)", 0, 2, 0);
+	T = trans[2][20] = settr(115,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(115,0,1,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(115,0,18,0,0,"DO", 0, 2, 0);
+	trans[2][1]	= settr(96,0,2,35,0,"((transactions[i].completed==1))", 1, 2, 0);
+	trans[2][2]	= settr(97,0,3,36,0,"assert((transactions[i].curr==0))", 1, 2, 0);
+	trans[2][3]	= settr(98,0,4,37,0,"assert((transactions[i].assigned==1))", 1, 2, 0);
+	trans[2][4]	= settr(99,0,9,38,38,"new_value = 0", 0, 2, 0); /* m: 5 -> 0,9 */
+	reached2[5] = 1;
+	trans[2][5]	= settr(0,0,0,0,0,"new_value = 10",0,0,0);
+	trans[2][10]	= settr(105,0,9,1,0,".(goto)", 0, 2, 0);
+	T = trans[2][9] = settr(104,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(104,0,8,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(104,0,6,0,0,"DO", 0, 2, 0);
+	trans[2][8]	= settr(103,0,12,1,0,"goto :b8", 0, 2, 0);
+	trans[2][6]	= settr(101,0,9,39,39,"((new_value<30))", 0, 2, 0); /* m: 7 -> 9,0 */
+	reached2[7] = 1;
+	trans[2][7]	= settr(0,0,0,0,0,"new_value = (new_value+1)",0,0,0);
+	trans[2][11]	= settr(106,0,12,1,0,"break", 0, 2, 0);
+	trans[2][12]	= settr(107,0,13,40,40,"transactions[i].curr = new_value", 1, 2, 0);
+	trans[2][13]	= settr(108,0,14,41,41,"transactions[i].total = transactions[i].curr", 1, 2, 0);
+	trans[2][14]	= settr(109,0,15,42,42,"transactions[i].assigned = 0", 1, 2, 0);
+	trans[2][15]	= settr(110,0,16,43,43,"transactions[i].completed = 0", 1, 2, 0);
+	trans[2][16]	= settr(111,0,27,44,44,"transactions[i].dest = 0", 1, 2, 0);
+	trans[2][17]	= settr(112,0,27,1,0,"goto :b7", 0, 2, 0);
+	trans[2][18]	= settr(113,0,27,2,0,"else", 0, 2, 0);
+	trans[2][19]	= settr(114,0,27,1,0,"goto :b7", 0, 2, 0);
+	trans[2][22]	= settr(117,0,27,1,0,"break", 0, 2, 0);
+	T = trans[2][27] = settr(122,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(122,0,23,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(122,0,25,0,0,"IF", 0, 2, 0);
+	trans[2][23]	= settr(118,0,20,45,45,"((i<4))", 0, 2, 0); /* m: 24 -> 20,0 */
+	reached2[24] = 1;
+	trans[2][24]	= settr(0,0,0,0,0,"i = (i+1)",0,0,0);
+	trans[2][28]	= settr(123,0,20,1,0,".(goto)", 0, 2, 0);
+	trans[2][25]	= settr(120,0,20,46,46,"((i>=4))", 0, 2, 0); /* m: 26 -> 20,0 */
+	reached2[26] = 1;
+	trans[2][26]	= settr(0,0,0,0,0,"i = 0",0,0,0);
+	trans[2][29]	= settr(124,0,20,1,0,"goto loop", 0, 2, 0);
+	trans[2][30]	= settr(0,0,0,0,0,"-end-",0,0,0);
 
-	/* proctype 0: Decider */
+	/* proctype 1: Decider */
 
-	trans[0] = (Trans **) emalloc(34*sizeof(Trans *));
+	trans[1] = (Trans **) emalloc(54*sizeof(Trans *));
 
-	trans[0][1]	= settr(0,0,2,26,0,"((in_create==0))", 1, 2, 0);
-	trans[0][2]	= settr(1,0,3,27,0,"printf('Hello there 2\\n')", 0, 2, 0);
-	trans[0][3]	= settr(2,0,4,28,0,"assert((curr_transaction!=0))", 1, 2, 0);
-	trans[0][4]	= settr(3,0,5,29,29,"target_wallet = 0", 0, 2, 0);
-	trans[0][5]	= settr(4,0,25,30,0,"printf('Current Transaction, %d \\n',curr_transaction)", 1, 2, 0);
-	trans[0][26]	= settr(25,0,25,1,0,".(goto)", 0, 2, 0);
-	T = trans[0][25] = settr(24,0,0,0,0,"DO", 0, 2, 0);
-	T = T->nxt	= settr(24,0,6,0,0,"DO", 0, 2, 0);
-	    T->nxt	= settr(24,0,23,0,0,"DO", 0, 2, 0);
-	trans[0][6]	= settr(5,0,21,31,0,"((curr_transaction>0))", 1, 2, 0);
-	T = trans[0][21] = settr(20,0,0,0,0,"IF", 0, 2, 0);
-	T = T->nxt	= settr(20,0,7,0,0,"IF", 0, 2, 0);
-	    T->nxt	= settr(20,0,14,0,0,"IF", 0, 2, 0);
-	trans[0][7]	= settr(6,0,8,32,0,"((curr_transaction>10))", 1, 2, 0);
-	trans[0][8]	= settr(7,0,9,33,0,"printf('Inside do larger than 10 loop: %d \\n',curr_transaction)", 1, 2, 0);
-	trans[0][9]	= settr(8,0,10,34,34,"wallet[target_wallet] = 0", 1, 2, 0);
-	trans[0][10]	= settr(9,0,11,35,35,"dest_transaction = (dest_transaction+10)", 1, 2, 0);
-	trans[0][11]	= settr(10,0,12,36,36,"curr_transaction = (curr_transaction-10)", 1, 2, 0);
-	trans[0][12]	= settr(11,0,13,37,37,"wallet[target_wallet] = 10", 1, 2, 0);
-	trans[0][13]	= settr(12,0,25,38,38,"target_wallet = (target_wallet+1)", 0, 2, 0);
-	trans[0][22]	= settr(21,0,25,1,0,".(goto)", 0, 2, 0);
-	trans[0][14]	= settr(13,0,15,39,0,"((curr_transaction<=10))", 1, 2, 0);
-	trans[0][15]	= settr(14,0,16,40,0,"printf('Inside do smaller than 10 loop: %d \\n',curr_transaction)", 1, 2, 0);
-	trans[0][16]	= settr(15,0,17,41,41,"wallet[target_wallet] = (wallet[target_wallet]-curr_transaction)", 1, 2, 0);
-	trans[0][17]	= settr(16,0,18,42,42,"dest_transaction = (dest_transaction+curr_transaction)", 1, 2, 0);
-	trans[0][18]	= settr(17,0,19,43,43,"wallet[target_wallet] = (wallet[target_wallet]+curr_transaction)", 1, 2, 0);
-	trans[0][19]	= settr(18,0,20,44,44,"curr_transaction = 0", 1, 2, 0);
-	trans[0][20]	= settr(19,0,25,45,0,"assert((wallet[target_wallet]==10))", 1, 2, 0);
-	trans[0][23]	= settr(22,0,28,2,0,"else", 0, 2, 0);
-	trans[0][24]	= settr(23,0,28,1,0,"goto :b0", 0, 2, 0);
-	trans[0][27]	= settr(26,0,28,1,0,"break", 0, 2, 0);
-	trans[0][28]	= settr(27,0,29,46,0,"printf('Done with mixing! %d \\n',curr_transaction)", 1, 2, 0);
-	trans[0][29]	= settr(28,0,30,47,0,"assert((dest_transaction==expected_transaction))", 1, 2, 0);
-	trans[0][30]	= settr(29,0,31,48,48,"in_mix = 0", 1, 2, 0);
-	trans[0][31]	= settr(30,0,1,49,49,"in_create = 1", 1, 2, 0);
-	trans[0][32]	= settr(31,0,1,1,0,"goto loop", 0, 2, 0);
-	trans[0][33]	= settr(0,0,0,0,0,"-end-",0,0,0);
+	trans[1][51]	= settr(93,0,50,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][50] = settr(92,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(92,0,1,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(92,0,43,0,0,"DO", 0, 2, 0);
+	trans[1][1]	= settr(43,0,2,47,0,"((transactions[i].assigned==0))", 1, 2, 0);
+	trans[1][2]	= settr(44,0,3,48,0,"assert((transactions[i].completed==0))", 1, 2, 0);
+	trans[1][3]	= settr(45,0,4,49,0,"assert((transactions[i].curr>0))", 1, 2, 0);
+	trans[1][4]	= settr(46,0,5,50,0,"printf('Unassigned index: %d \\n',i)", 0, 2, 0);
+	trans[1][5]	= settr(47,0,6,51,0,"printf('Transaction total: %d \\n',transactions[i].total)", 1, 2, 0);
+	trans[1][6]	= settr(48,0,12,52,52,"neededWallets = (transactions[i].total/10)", 1, 2, 0);
+	trans[1][13]	= settr(55,0,12,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][12] = settr(54,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(54,0,7,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(54,0,10,0,0,"DO", 0, 2, 0);
+	trans[1][7]	= settr(49,0,8,53,0,"(((transactions[i].total%10)>0))", 1, 2, 0);
+	trans[1][8]	= settr(50,0,40,54,54,"neededWallets = (neededWallets+1)", 0, 2, 0); /* m: 15 -> 0,40 */
+	reached1[15] = 1;
+	trans[1][9]	= settr(51,0,15,1,0,"goto :b4", 0, 2, 0); /* m: 15 -> 0,40 */
+	reached1[15] = 1;
+	trans[1][10]	= settr(52,0,15,2,0,"else", 0, 2, 0);
+	trans[1][11]	= settr(53,0,15,1,0,"goto :b4", 0, 2, 0); /* m: 15 -> 0,40 */
+	reached1[15] = 1;
+	trans[1][14]	= settr(56,0,15,1,0,"break", 0, 2, 0);
+	trans[1][15]	= settr(57,0,40,55,55,"printf('Needed wallets: %d \\n',neededWallets)", 0, 2, 0); /* m: 16 -> 0,40 */
+	reached1[16] = 1;
+	trans[1][16]	= settr(0,0,0,0,0,"assert((neededWallets>0))",0,0,0);
+	trans[1][17]	= settr(0,0,0,0,0,"w = 0",0,0,0);
+	trans[1][41]	= settr(83,0,40,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][40] = settr(82,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(82,0,18,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(82,0,24,0,0,"DO", 0, 2, 0);
+	trans[1][18]	= settr(60,0,20,56,56,"((neededWallets==0))", 0, 2, 0); /* m: 19 -> 20,0 */
+	reached1[19] = 1;
+	trans[1][19]	= settr(0,0,0,0,0,"printf('Finished assigning index: %d \\n',i)",0,0,0);
+	trans[1][20]	= settr(62,0,21,57,57,"transactions[i].assigned = 1", 1, 2, 0);
+	trans[1][21]	= settr(63,0,22,58,0,"assert((transactions[i].completed==0))", 1, 2, 0);
+	trans[1][22]	= settr(64,0,50,59,59,"(run Mix(i))", 0, 2, 0);
+	trans[1][23]	= settr(65,0,50,1,0,"goto :b5", 0, 2, 0);
+	trans[1][24]	= settr(66,0,37,2,0,"else", 0, 2, 0);
+	trans[1][38]	= settr(80,0,37,1,0,".(goto)", 0, 2, 0);
+	T = trans[1][37] = settr(79,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(79,0,25,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(79,0,30,0,0,"DO", 0, 2, 0);
+	trans[1][25]	= settr(67,0,26,60,0,"((wallets[w].locked==0))", 1, 2, 0);
+	trans[1][26]	= settr(68,0,27,61,61,"wallets[w].locked = 1", 1, 2, 0);
+	trans[1][27]	= settr(69,0,28,62,62,"neededWallets = (neededWallets-1)", 0, 2, 0);
+	trans[1][28]	= settr(70,0,40,63,63,"transactions[i].locks[w] = 1", 1, 2, 0);
+	trans[1][29]	= settr(71,0,40,1,0,"goto :b6", 0, 2, 0);
+	trans[1][30]	= settr(72,0,35,2,0,"else", 0, 2, 0);
+	T = trans[1][35] = settr(77,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(77,0,31,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(77,0,33,0,0,"IF", 0, 2, 0);
+	trans[1][31]	= settr(73,0,37,64,64,"((w<7))", 0, 2, 0); /* m: 32 -> 37,0 */
+	reached1[32] = 1;
+	trans[1][32]	= settr(0,0,0,0,0,"w = (w+1)",0,0,0);
+	trans[1][36]	= settr(78,0,37,1,0,".(goto)", 0, 2, 0);
+	trans[1][33]	= settr(75,0,37,65,65,"((w>=7))", 0, 2, 0); /* m: 34 -> 37,0 */
+	reached1[34] = 1;
+	trans[1][34]	= settr(0,0,0,0,0,"w = 0",0,0,0);
+	trans[1][39]	= settr(81,0,40,1,0,"break", 0, 2, 0);
+	trans[1][42]	= settr(84,0,50,1,0,"break", 0, 2, 0);
+	trans[1][43]	= settr(85,0,48,2,0,"else", 0, 2, 0);
+	T = trans[1][48] = settr(90,0,0,0,0,"IF", 0, 2, 0);
+	T = T->nxt	= settr(90,0,44,0,0,"IF", 0, 2, 0);
+	    T->nxt	= settr(90,0,46,0,0,"IF", 0, 2, 0);
+	trans[1][44]	= settr(86,0,50,66,66,"((i<4))", 0, 2, 0); /* m: 45 -> 50,0 */
+	reached1[45] = 1;
+	trans[1][45]	= settr(0,0,0,0,0,"i = (i+1)",0,0,0);
+	trans[1][49]	= settr(91,0,50,1,0,".(goto)", 0, 2, 0);
+	trans[1][46]	= settr(88,0,50,67,67,"((i>=4))", 0, 2, 0); /* m: 47 -> 50,0 */
+	reached1[47] = 1;
+	trans[1][47]	= settr(0,0,0,0,0,"i = 0",0,0,0);
+	trans[1][52]	= settr(94,0,53,1,0,"break", 0, 2, 0);
+	trans[1][53]	= settr(95,0,0,68,68,"-end-", 0, 3500, 0);
+
+	/* proctype 0: Mix */
+
+	trans[0] = (Trans **) emalloc(44*sizeof(Trans *));
+
+	trans[0][1]	= settr(0,0,2,69,0,"assert((transactions[t_num].assigned==1))", 1, 2, 0);
+	trans[0][2]	= settr(1,0,36,70,70,"w = 0", 0, 2, 0); /* m: 3 -> 0,36 */
+	reached0[3] = 1;
+	trans[0][3]	= settr(0,0,0,0,0,"w = 0",0,0,0);
+	trans[0][37]	= settr(36,0,36,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][36] = settr(35,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(35,0,4,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(35,0,34,0,0,"DO", 0, 2, 0);
+	trans[0][4]	= settr(3,0,30,71,0,"((w<=7))", 0, 2, 0);
+	trans[0][31]	= settr(30,0,30,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][30] = settr(29,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(29,0,5,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(29,0,28,0,0,"DO", 0, 2, 0);
+	trans[0][5]	= settr(4,0,6,72,0,"((transactions[t_num].locks[w]==1))", 1, 2, 0);
+	trans[0][6]	= settr(5,0,7,73,0,"assert((transactions[t_num].curr>0))", 1, 2, 0);
+	trans[0][7]	= settr(6,0,20,74,0,"assert((wallets[w].locked==1))", 1, 2, 0);
+	trans[0][21]	= settr(20,0,20,1,0,".(goto)", 0, 2, 0);
+	T = trans[0][20] = settr(19,0,0,0,0,"DO", 0, 2, 0);
+	T = T->nxt	= settr(19,0,8,0,0,"DO", 0, 2, 0);
+	    T->nxt	= settr(19,0,14,0,0,"DO", 0, 2, 0);
+	trans[0][8]	= settr(7,0,9,75,0,"((transactions[t_num].curr>10))", 1, 2, 0);
+	trans[0][9]	= settr(8,0,10,76,76,"wallets[w].value = 0", 1, 2, 0);
+	trans[0][10]	= settr(9,0,11,77,77,"transactions[t_num].dest = (transactions[t_num].dest+10)", 1, 2, 0);
+	trans[0][11]	= settr(10,0,12,78,78,"transactions[t_num].curr = (transactions[t_num].curr-10)", 1, 2, 0);
+	trans[0][12]	= settr(11,0,23,79,79,"wallets[w].value = 10", 1, 2, 0);
+	trans[0][13]	= settr(12,0,23,1,0,"goto :b2", 0, 2, 0);
+	trans[0][14]	= settr(13,0,15,2,0,"else", 0, 2, 0);
+	trans[0][15]	= settr(14,0,16,80,80,"wallets[w].value = (wallets[w].value-transactions[t_num].curr)", 1, 2, 0);
+	trans[0][16]	= settr(15,0,17,81,81,"transactions[t_num].dest = (transactions[t_num].dest+transactions[t_num].curr)", 1, 2, 0);
+	trans[0][17]	= settr(16,0,18,82,82,"wallets[w].value = (wallets[w].value+transactions[t_num].curr)", 1, 2, 0);
+	trans[0][18]	= settr(17,0,23,83,83,"transactions[t_num].curr = 0", 1, 2, 0);
+	trans[0][19]	= settr(18,0,23,1,0,"goto :b2", 0, 2, 0);
+	trans[0][22]	= settr(21,0,23,1,0,"break", 0, 2, 0);
+	trans[0][23]	= settr(22,0,24,84,84,"transactions[t_num].locks[w] = 0", 1, 2, 0);
+	trans[0][24]	= settr(23,0,25,85,85,"wallets[w].locked = 0", 1, 2, 0);
+	trans[0][25]	= settr(24,0,26,86,0,"printf('Transaction number: %d\\n',t_num)", 0, 2, 0);
+	trans[0][26]	= settr(25,0,33,87,0,"assert((wallets[w].value==10))", 1, 2, 0);
+	trans[0][27]	= settr(26,0,33,1,0,"goto :b1", 0, 2, 0); /* m: 33 -> 0,36 */
+	reached0[33] = 1;
+	trans[0][28]	= settr(27,0,33,2,0,"else", 0, 2, 0);
+	trans[0][29]	= settr(28,0,33,1,0,"goto :b1", 0, 2, 0); /* m: 33 -> 0,36 */
+	reached0[33] = 1;
+	trans[0][32]	= settr(31,0,33,1,0,"break", 0, 2, 0);
+	trans[0][33]	= settr(32,0,36,88,88,"w = (w+1)", 0, 2, 0);
+	trans[0][34]	= settr(33,0,39,2,0,"else", 0, 2, 0);
+	trans[0][35]	= settr(34,0,39,1,0,"goto :b0", 0, 2, 0);
+	trans[0][38]	= settr(37,0,39,1,0,"break", 0, 2, 0);
+	trans[0][39]	= settr(38,0,40,89,0,"assert((transactions[t_num].curr==0))", 1, 2, 0);
+	trans[0][40]	= settr(39,0,42,90,0,"assert((transactions[t_num].dest==transactions[t_num].total))", 1, 2, 0);
+	trans[0][41]	= settr(40,0,42,1,0,"goto end", 0, 2, 0);
+	trans[0][42]	= settr(41,0,43,91,91,"transactions[t_num].completed = 1", 1, 2, 0);
+	trans[0][43]	= settr(42,0,0,92,92,"-end-", 0, 3500, 0);
 	/* np_ demon: */
 	trans[_NP_] = (Trans **) emalloc(2*sizeof(Trans *));
 	T = trans[_NP_][0] = settr(9997,0,1,_T5,0,"(np_)", 1,2,0);
