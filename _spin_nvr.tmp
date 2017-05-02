@@ -1,0 +1,21 @@
+never no_starvation {    /* !(([] (<> (in_mix))) && (<> (! (in_create)))) */
+T0_init:
+	do
+	:: (! ((! (in_create)))) -> goto accept_S2
+	:: (! ((in_mix))) -> goto accept_S8
+	:: (1) -> goto T0_S5
+	od;
+accept_S2:
+	do
+	:: (! ((! (in_create)))) -> goto accept_S2
+	od;
+accept_S8:
+	do
+	:: (! ((in_mix))) -> goto accept_S8
+	od;
+T0_S5:
+	do
+	:: (! ((in_mix))) -> goto accept_S8
+	:: (1) -> goto T0_S5
+	od;
+}

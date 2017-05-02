@@ -32,7 +32,7 @@ proctype Mix(int t_num) {
       assert(transactions[t_num].curr > 0); // At any point where there is a locked wallet, the transaction still has funds to mix
       assert(wallets[w].locked == 1); // If the transaction claims to have locked a wallet, the wallet should be locked
       do
-      :: (transactions[t_num].curr >= 10) ->
+      :: (transactions[t_num].curr > 10) ->
           wallets[w].value = 0; // Use all the money in the wallet
           transactions[t_num].dest = transactions[t_num].dest + 10; // Move to destination
           transactions[t_num].curr = transactions[t_num].curr - 10; // Pay out
@@ -41,13 +41,16 @@ proctype Mix(int t_num) {
       :: else -> 
           wallets[w].value = wallets[w].value - transactions[t_num].curr;
           transactions[t_num].dest = transactions[t_num].dest + transactions[t_num].curr;
-          transactions[t_num].curr = 0;
           wallets[w].value = wallets[w].value + transactions[t_num].curr;
+          transactions[t_num].curr = 0;
           break;
       od;
 
+
       transactions[t_num].locks[w] = 0;
       wallets[w].locked = 0;
+      printf("Transaction number: %d\n", t_num);
+      assert(wallets[w].value == 10); //  Funds are replenished before unlocking it and letting another transaction use this wallet
       break;
 
     :: else -> break;
@@ -99,8 +102,6 @@ proctype Decider() {
     :: else ->
       do
       ::(wallets[w].locked == 0) -> // assign it
-        assert(wallets[w].value == 10); // An unlocked wallet should have all of its funds
-
         wallets[w].locked = 1; // Lock it
         neededWallets--;
         transactions[i].locks[w] = 1;

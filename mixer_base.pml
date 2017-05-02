@@ -95,3 +95,8 @@ init {
   run Creator();
 
 }
+
+
+ltl no_starvation{
+  always (eventually in_mix) && (eventually !in_create);
+}
