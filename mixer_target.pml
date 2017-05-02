@@ -18,16 +18,19 @@ typedef Trans {
 Trans transactions[5];
 
 proctype Mix(int t_num) {
-  assert(transactions[t-num].assigned == 1); // We are only mixing transactions that are finished with assignment
+
+  assert(transactions[t_num].assigned == 1); // We are only mixing transactions that are finished with assignment
   int w;
   // Loop through its locks array to find the wallets that are locked
-  for (w: 0..8) {
+  for (w: 0..7) {
     do
     :: (transactions[t_num].locks[w] == 1) -> 
       // Transfer money out of locked wallet
       // Replenish money into locked wallet
       // Adjust transaction current
       // Unlock the wallet
+      assert(transactions[t_num].curr > 0); // At any point where there is a locked wallet, the transaction still has funds to mix
+      assert(wallets[w].locked == 1); // If the transaction claims to have locked a wallet, the wallet should be locked
       do
       :: (transactions[t_num].curr >= 10) ->
           wallets[w].value = 0; // Use all the money in the wallet
@@ -45,6 +48,7 @@ proctype Mix(int t_num) {
 
       transactions[t_num].locks[w] = 0;
       wallets[w].locked = 0;
+      break;
 
     :: else -> break;
     od;
@@ -52,8 +56,11 @@ proctype Mix(int t_num) {
 
   assert(transactions[t_num].curr == 0); // All money has been mixed
   assert(transactions[t_num].dest == transactions[t_num].total); // All money has reached its destination
+  goto end;
 
-  transactions[t_num].completed = 1;
+  end:
+    transactions[t_num].completed = 1;
+
 }
 
 // Decides which wallets are used for mixing based on the transactions
@@ -65,6 +72,9 @@ proctype Decider() {
   ::(transactions[i].assigned == 0) -> // do something
     // Loop through all the wallets until we find an unlocked wallet
     // Determine how many wallets a transaction requires
+    assert(transactions[i].completed == 0);
+    assert(transactions[i].curr > 0);
+
     printf("Unassigned index: %d \n", i);
     printf("Transaction total: %d \n", transactions[i].total);
 
@@ -76,16 +86,21 @@ proctype Decider() {
     :: else -> break;
     od;
     printf("Needed wallets: %d \n", neededWallets);
+    assert(neededWallets > 0); // Wallets are needed to mix
 
     int w = 0;
     do
     :: (neededWallets == 0) ->
       printf("Finished assigning index: %d \n", i);
       transactions[i].assigned = 1; // Transaction is finished with its assignment
+      assert(transactions[i].completed == 0); // Transaction should not be completed before it even gets mixed
+      run Mix(i); // Mix this transaction with parameter of the index of the transaction
       break; // If no more wallets are needed,
     :: else ->
       do
       ::(wallets[w].locked == 0) -> // assign it
+        assert(wallets[w].value == 10); // An unlocked wallet should have all of its funds
+
         wallets[w].locked = 1; // Lock it
         neededWallets--;
         transactions[i].locks[w] = 1;
@@ -110,11 +125,13 @@ proctype Decider() {
 // Creates new transactions
 proctype Creator() {
     int i = 0;
-
+    int new_value;
     loop:
       do
       :: (transactions[i].completed == 1) ->
-        int new_value = 0;
+        assert(transactions[i].curr == 0); // All of its funds have been mixed
+        assert(transactions[i].assigned == 1); // A completed transaction should also have been assigned
+        new_value = 0;
         select(new_value: 10..30);
         transactions[i].curr = new_value;
         transactions[i].total = transactions[i].curr;

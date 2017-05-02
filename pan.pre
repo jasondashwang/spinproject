@@ -15,6 +15,7 @@ Wal wallets[8];
 typedef Trans {
   int curr;
   int total;
+  int dest;
   bool locks[8];
   bool assigned;
   bool completed;
@@ -22,21 +23,49 @@ typedef Trans {
 
 Trans transactions[5];
 
-int dest_wal[5];
+proctype Mix(int t_num) {
 
+  assert(transactions[t_num].assigned == 1);
+  int w;
 
-
-proctype Unlock(int t_num) {
-  int i;
-
-  for (i: 0..7) {
+  for (w: 0..7) {
     do
-    :: (transactions[t_num].locks[i] == 1) ->
-      wallets[i].locked = 0;
-      transactions[t_num].locks[i] = 0;
+    :: (transactions[t_num].locks[w] == 1) ->
+
+
+
+
+      assert(transactions[t_num].curr > 0);
+      do
+      :: (transactions[t_num].curr >= 10) ->
+          wallets[w].value = 0;
+          transactions[t_num].dest = transactions[t_num].dest + 10;
+          transactions[t_num].curr = transactions[t_num].curr - 10;
+          wallets[w].value = 10;
+          break;
+      :: else ->
+          wallets[w].value = wallets[w].value - transactions[t_num].curr;
+          transactions[t_num].dest = transactions[t_num].dest + transactions[t_num].curr;
+          transactions[t_num].curr = 0;
+          wallets[w].value = wallets[w].value + transactions[t_num].curr;
+          break;
+      od;
+
+      transactions[t_num].locks[w] = 0;
+      wallets[w].locked = 0;
+      break;
+
     :: else -> break;
     od;
   }
+
+  assert(transactions[t_num].curr == 0);
+  assert(transactions[t_num].dest == transactions[t_num].total);
+  goto end;
+
+  end:
+    transactions[t_num].completed = 1;
+
 }
 
 
@@ -65,6 +94,7 @@ proctype Decider() {
     :: (neededWallets == 0) ->
       printf("Finished assigning index: %d \n", i);
       transactions[i].assigned = 1;
+      run Mix(i);
       break;
     :: else ->
       do
@@ -80,21 +110,6 @@ proctype Decider() {
         fi;
       od;
     od;
-
-
-      printf("curr: %d\n", transactions[i].curr);
-      printf("total: %d\n", transactions[i].total);
-      int lk = 0;
-      do
-      :: (lk < 7) ->
-        printf("%d, ", transactions[i].locks[lk]);
-        lk++;
-      :: (lk >= 7) ->
-        printf("%d\n", transactions[i].locks[lk]);
-        break;
-      od;
-      printf("assigned: %d\n", transactions[i].assigned);
-      printf("completed: %d\n", transactions[i].completed);
 
   :: else ->
       if
@@ -118,6 +133,7 @@ proctype Creator() {
         transactions[i].total = transactions[i].curr;
         transactions[i].assigned = 0;
         transactions[i].completed = 0;
+        transactions[i].dest = 0;
         break;
       :: else -> break;
       od;
@@ -152,8 +168,9 @@ init {
 
     transactions[j].assigned = 1;
     transactions[j].completed = 1;
+    transactions[j].dest = 0;
   }
-# 183 "mixer_target.pml"
+# 200 "mixer_target.pml"
   run Creator();
   run Decider();
 }
