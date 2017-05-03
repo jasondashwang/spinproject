@@ -41,7 +41,7 @@ BASE (mixer_base.pml)
 - Only one transaction can be made at a time with this model
 - Inefficient due to wallets possibly not being used in a transaction
 
-ASYNCHRONOUS (mixer_target.pml)
+ASYNCHRONOUS (mixer_target.pml and mixer_target_finite.pml)
 - Build on the basic model to allow mixing with asynchronous transactions.
 - Abstracted out input wallet and limited transaction values like in base.
 - Have mixing/completing the transaction as a seperate process to mirror
@@ -50,6 +50,15 @@ ASYNCHRONOUS (mixer_target.pml)
 - More realistic and scalable because can accomodate more users and 
    increasing transaction and wallet numbers/values in practice (we kept
    the numbers on the smaller side for the sake of Spin)
+- In mixer_target.pml the scheduler chooses to not reap completed Mixer()
+   procs, causing the program to run out of available active processes.
+   This results in assertions being violated because some transactions
+   do not reach completion. To remedy this, we created 
+   mixer_target_finite.pml which only runs for a finite number of
+   transactions (200) in order to not run into the wall of running out of 
+   available active processes. We saw this as a vaild soulution because
+   if the program were to deadlock it would definitely do so within
+   the first 200 transactions.
 
 
 Challenges:
