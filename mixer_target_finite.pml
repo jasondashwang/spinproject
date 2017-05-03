@@ -17,6 +17,9 @@ typedef Transac {
 
 Transac transactions[5];
 
+bool new_transaction = 0; // If there is a new transaction
+bool completed_transaction = 1; // If there is a completed transaction
+
 proctype Mix(int t_num) {
 
   assert(transactions[t_num].assigned == 1); // We are only mixing transactions that are finished with assignment
@@ -46,11 +49,11 @@ proctype Mix(int t_num) {
           break;
       od;
 
+      assert(wallets[w].value == 10); //  Funds are replenished before unlocking it and letting another transaction use this wallet
+
 
       transactions[t_num].locks[w] = 0;
       wallets[w].locked = 0;
-      printf("Transaction number: %d\n", t_num);
-      assert(wallets[w].value == 10); //  Funds are replenished before unlocking it and letting another transaction use this wallet
       break;
 
     :: else -> break;
@@ -63,8 +66,11 @@ proctype Mix(int t_num) {
 
   end:
     transactions[t_num].completed = 1;
+    completed_transaction = 1; // Raise a flag that there is a completed transaction
 
 }
+
+int decided = 0; // Keep count of decided transactions (200 max)
 
 // Decides which wallets are used for mixing based on the transactions
 proctype Decider() {
@@ -72,9 +78,11 @@ proctype Decider() {
   int neededWallets;
 
   do
-  ::(transactions[i].assigned == 0) -> // do something
+  ::(transactions[i].assigned == 0) -> 
     // Loop through all the wallets until we find an unlocked wallet
     // Determine how many wallets a transaction requires
+    new_transaction = 0; // Lower the flag that there is a new transaction
+
     assert(transactions[i].completed == 0);
     assert(transactions[i].curr > 0);
 
@@ -97,7 +105,8 @@ proctype Decider() {
       printf("Finished assigning index: %d \n", i);
       transactions[i].assigned = 1; // Transaction is finished with its assignment
       assert(transactions[i].completed == 0); // Transaction should not be completed before it even gets mixed
-      run Mix(i);ap // Mix this transaction with parameter of the index of the transaction
+      run Mix(i); // Mix this transaction with parameter of the index of the transaction
+      decided++;
       break; // If no more wallets are needed,
     :: else ->
       do
@@ -115,31 +124,10 @@ proctype Decider() {
     od;
 
   :: else ->
-      if
-      :: (i < 4) -> i++;
-      :: (i >= 4) -> i = 0;
-      fi;
-  od;
+      
 
-}
-
-// Creates new transactions
-proctype Creator() {
-    int i = 0;
-    int new_value;
-    loop:
       do
-      :: (transactions[i].completed == 1) ->
-        assert(transactions[i].curr == 0); // All of its funds have been mixed
-        assert(transactions[i].assigned == 1); // A completed transaction should also have been assigned
-        new_value = 0;
-        select(new_value: 10..30);
-        transactions[i].curr = new_value;
-        transactions[i].total = transactions[i].curr;
-        transactions[i].assigned = 0;
-        transactions[i].completed = 0;
-        transactions[i].dest = 0;
-        break;
+      :: (decided == 100) -> goto end;
       :: else -> break;
       od;
 
@@ -148,7 +136,58 @@ proctype Creator() {
       :: (i >= 4) -> i = 0;
       fi;
 
+      new_transaction == 1; // Wait until there is a new transaction before searching for it
+  od;
+
+  end:
+    printf("Decided 100 transactions\n");
+
+}
+int created = 0; // Keep count of created (max 200 transactions)
+
+// Creates new transactions
+proctype Creator() {
+    
+    int i = 0;
+    int new_value;
+    loop:
+      
+
+      do
+      :: (created == 100) -> goto end;
+      :: else -> break;
+      od;
+
+      completed_transaction == 1; // Wait until there is completed transaction before looking for it
+
+      do
+      :: (transactions[i].completed == 1) ->
+        assert(transactions[i].curr == 0); // All of its funds have been mixed
+        assert(transactions[i].assigned == 1); // A completed transaction should also have been assigned
+        new_value = 0;
+        select(new_value: 10..30);
+        transactions[i].curr = new_value;
+        transactions[i].total = transactions[i].curr;
+        transactions[i].completed = 0;
+        transactions[i].dest = 0;
+        transactions[i].assigned = 0;
+        created++;
+        completed_transaction = 0; // Lower the flag of that there is an incomplete transaction
+        new_transaction = 1; // Raise the flag that there is a new transaction
+        break;
+      :: else -> break;
+      od;
+
+
+      if
+      :: (i < 4) -> i++;
+      :: (i >= 4) -> i = 0;
+      fi;
+
     goto loop;
+
+    end:
+      printf("Finished creating 100 transactions\n");
 }
 
 // initialize arrays of wallets and transactions and call creator
@@ -180,18 +219,4 @@ init {
   
   run Creator();
   run Decider();
-}
-
-// ltl no_starvation_wallets{
-//   always (eventually wallets[0].locked) && (eventually wallets[1].locked)
-//   && (eventually wallets[2].locked) && (eventually wallets[3].locked)
-//   && (eventually wallets[4].locked) && (eventually wallets[5].locked)
-//   && (eventually wallets[6].locked) && (eventually wallets[7].locked);
-// }
-
-ltl no_starvation_transaction_complete{
-  eventually always (transactions[0].completed) && (transactions[1].completed)
-  && (transactions[2].completed) && (transactions[3].completed)
-  && (transactions[4].completed
-    );
 }

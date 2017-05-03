@@ -1,36 +1,19 @@
-never no_starvation_transaction_complete {    /* !((((([] (<> (transactions[0].completed))) && (<> (transactions[1].completed))) && (<> (transactions[2].completed))) && (<> (transactions[3].completed))) && (<> (transactions[4].completed))) */
+never no_starvation_transaction_complete {    /* !(((((<> ([] (transactions[0].completed))) && (transactions[1].completed)) && (transactions[2].completed)) && (transactions[3].completed)) && (transactions[4].completed)) */
 T0_init:
 	do
-	:: (! ((transactions[4].completed))) -> goto accept_S7
-	:: (! ((transactions[3].completed))) -> goto accept_S12
-	:: (! ((transactions[2].completed))) -> goto accept_S17
-	:: (! ((transactions[1].completed))) -> goto accept_S20
-	:: (! ((transactions[0].completed))) -> goto accept_S26
-	:: (1) -> goto T0_S23
+	:: (! ((transactions[0].completed))) -> goto accept_S6
+	:: (1) -> goto T0_S6
+	:: atomic { (((! ((transactions[1].completed))) || (((! ((transactions[2].completed))) || (((! ((transactions[3].completed))) || (! ((transactions[4].completed))))))))) -> assert(!(((! ((transactions[1].completed))) || (((! ((transactions[2].completed))) || (((! ((transactions[3].completed))) || (! ((transactions[4].completed)))))))))) }
 	od;
-accept_S7:
+accept_S6:
 	do
-	:: (! ((transactions[4].completed))) -> goto accept_S7
+	:: (1) -> goto T0_S6
 	od;
-accept_S12:
+T0_S6:
 	do
-	:: (! ((transactions[3].completed))) -> goto accept_S12
+	:: (! ((transactions[0].completed))) -> goto accept_S6
+	:: (1) -> goto T0_S6
 	od;
-accept_S17:
-	do
-	:: (! ((transactions[2].completed))) -> goto accept_S17
-	od;
-accept_S20:
-	do
-	:: (! ((transactions[1].completed))) -> goto accept_S20
-	od;
-accept_S26:
-	do
-	:: (! ((transactions[0].completed))) -> goto accept_S26
-	od;
-T0_S23:
-	do
-	:: (! ((transactions[0].completed))) -> goto accept_S26
-	:: (1) -> goto T0_S23
-	od;
+accept_all:
+	skip
 }
